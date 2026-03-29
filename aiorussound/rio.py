@@ -583,7 +583,7 @@ class ZoneControlSurface(Zone, AbstractControlSurface):
         await self.client.set_variable(self.device_str, "treble", str(treble))
 
     async def set_balance(self, balance: int) -> None:
-        """Set the treble of the zone."""
+        """Set the balance of the zone."""
         if balance < -10 or balance > 10:
             raise RussoundError("Balance must be between -10 and 10")
         await self.client.set_variable(self.device_str, "balance", str(balance))
@@ -595,6 +595,19 @@ class ZoneControlSurface(Zone, AbstractControlSurface):
         await self.client.set_variable(
             self.device_str, "turnOnVolume", str(turn_on_volume)
         )
+
+    async def set_party_mode(self, mode: str) -> None:
+        """Set the party mode of the zone.
+
+        Valid values:
+        - "off"
+        - "on"
+        - "master"
+        """
+        normalized = mode.strip().lower()
+        if normalized not in {"off", "on", "master"}:
+            raise RussoundError("Party mode must be one of: off, on, master")
+        await self.send_event("PartyMode", normalized)
 
     async def restore_preset(self, preset_id: int) -> None:
         """Restore the preset of the zone."""
